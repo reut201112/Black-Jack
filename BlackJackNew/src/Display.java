@@ -522,7 +522,7 @@ public class Display extends JFrame {
 		 count=2;
 	 	 while (dealer.valueOf()<17 || (dealer.valueOf()<=player.valueOf() && !player.isBusted())) {
 			 dealer.add(deck.nextCard());
-			 sleep(1000);
+			 sleep(100);
 			 displayDealerCards(dealer, count);
 			 count++;
 		 }
@@ -543,7 +543,7 @@ public class Display extends JFrame {
 			menu.setBalance(balance);
 			txtBalance.setText(Double.toString(balance));
 		}
-		else if(dealer.hasBlackJack()){
+		else if(dealer.hasBlackJack() && !player.hasBlackJack()){
 			displayOutcomePlayer("Lose");
 			displayOutcomeDealer("Win");}
 		else if (player.isBusted() && !(dealer.isBusted())){
@@ -556,6 +556,10 @@ public class Display extends JFrame {
 			menu.setBalance(balance);
 			txtBalance.setText(Double.toString(balance));
 		}
+		else if(player.isBusted() && dealer.isBusted()) {
+			   displayOutcomePlayer("Lose");
+		   		displayOutcomeDealer("Lose");
+		   }
 	   else if (dealer.valueOf() == player.valueOf()){
 		   displayOutcomePlayer("Tie");
 	   		displayOutcomeDealer("Tie");

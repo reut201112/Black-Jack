@@ -429,14 +429,28 @@ public class Menu extends JFrame {
 			}
 			@Override
 			public void mouseExited(MouseEvent arg0) {
-				table50.setIcon(new ImageIcon("C:\\Users\\\u05E8\u05E2\u05D5\u05EA \u05D0\u05D5\u05D7\u05D9\u05D5\u05DF\\eclipse-workspace\\BlackJackNew\\\u05E9\u05D5\u05DC\u05D7\u05DF.jpg"));
+				table50.setIcon(new ImageIcon("C:\\Users\\רעות אוחיון\\Desktop\\Black Jack\\שולחן.jpg"));
 			}
 		});
-		table50.setIcon(new ImageIcon("C:\\Users\\\u05E8\u05E2\u05D5\u05EA \u05D0\u05D5\u05D7\u05D9\u05D5\u05DF\\eclipse-workspace\\BlackJackNew\\\u05E9\u05D5\u05DC\u05D7\u05DF.jpg"));
+		table50.setIcon(new ImageIcon("C:\\Users\\רעות אוחיון\\Desktop\\Black Jack\\שולחן.jpg"));
 		table50.setBounds(34, 205, 134, 106);
 		pnlTabels.add(table50);
 		
 		table100 = new JButton("");
+		table100.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				try {
+					Display d =new Display();
+					d.setVisible(true);
+					table=100;
+			
+				}
+				catch (IOException | SQLException | ClassNotFoundException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		});
 		table100.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseEntered(MouseEvent e) {
@@ -453,14 +467,28 @@ public class Menu extends JFrame {
 			}
 			@Override
 			public void mouseExited(MouseEvent e) {
-				table100.setIcon(new ImageIcon("C:\\Users\\\u05E8\u05E2\u05D5\u05EA \u05D0\u05D5\u05D7\u05D9\u05D5\u05DF\\eclipse-workspace\\BlackJackNew\\\u05E9\u05D5\u05DC\u05D7\u05DF.jpg"));
+				table100.setIcon(new ImageIcon("C:\\Users\\רעות אוחיון\\Desktop\\Black Jack\\שולחן.jpg"));
 			}
 		});
-		table100.setIcon(new ImageIcon("C:\\Users\\\u05E8\u05E2\u05D5\u05EA \u05D0\u05D5\u05D7\u05D9\u05D5\u05DF\\eclipse-workspace\\BlackJackNew\\\u05E9\u05D5\u05DC\u05D7\u05DF.jpg"));
+		table100.setIcon(new ImageIcon("C:\\Users\\רעות אוחיון\\Desktop\\Black Jack\\שולחן.jpg"));
 		table100.setBounds(204, 205, 134, 106);
 		pnlTabels.add(table100);
 		
 		tabel150 = new JButton("");
+		tabel150.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				try {
+					Display d =new Display();
+					d.setVisible(true);
+					table=150;
+			
+				}
+				catch (IOException | SQLException | ClassNotFoundException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+			}
+		});
 		tabel150.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseEntered(MouseEvent e) {
@@ -476,10 +504,10 @@ public class Menu extends JFrame {
 			}
 			@Override
 			public void mouseExited(MouseEvent e) {
-				tabel150.setIcon(new ImageIcon("C:\\Users\\\u05E8\u05E2\u05D5\u05EA \u05D0\u05D5\u05D7\u05D9\u05D5\u05DF\\eclipse-workspace\\BlackJackNew\\\u05E9\u05D5\u05DC\u05D7\u05DF.jpg"));
+				tabel150.setIcon(new ImageIcon("C:\\Users\\רעות אוחיון\\Desktop\\Black Jack\\שולחן.jpg"));
 			}
 		});
-		tabel150.setIcon(new ImageIcon("C:\\Users\\\u05E8\u05E2\u05D5\u05EA \u05D0\u05D5\u05D7\u05D9\u05D5\u05DF\\eclipse-workspace\\BlackJackNew\\\u05E9\u05D5\u05DC\u05D7\u05DF.jpg"));
+		tabel150.setIcon(new ImageIcon("C:\\Users\\רעות אוחיון\\Desktop\\Black Jack\\שולחן.jpg"));
 		tabel150.setBounds(371, 205, 134, 106);
 		pnlTabels.add(tabel150);
 		
@@ -663,10 +691,9 @@ public class Menu extends JFrame {
 	@SuppressWarnings("static-access")
 	public void setBalance (double balance) throws SQLException {
 		Connection conn=DriverManager.getConnection("jdbc:mysql://localhost:3306/playesrdb?serverTimezone=UTC","root","Reut8091746");
-		PreparedStatement psemail=conn.prepareStatement("UPDATE playesrdb.players SET balance=? WHERE Email=?;");
-		psemail.setDouble(1,balance);
-		psemail.setString(2,this.email);
-		psemail.executeQuery();
+		PreparedStatement psemail=conn.prepareStatement("UPDATE playesrdb.players SET balance='"+balance+"' WHERE Email=?;");
+		psemail.setString(1,this.email);
+		psemail.execute();
 	}
 	
 	@SuppressWarnings("static-access")
