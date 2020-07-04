@@ -4,6 +4,7 @@ import java.awt.EventQueue;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
+import javax.swing.text.DateFormatter;
 import javax.imageio.ImageIO;
 import javax.swing.Action;
 import javax.swing.GroupLayout;
@@ -18,11 +19,15 @@ import java.awt.CardLayout;
 import java.awt.Panel;
 import java.awt.event.ActionListener;
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.format.DateTimeFormatter;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.awt.event.ActionEvent;
@@ -38,6 +43,7 @@ import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
 import javax.swing.JComboBox;
+import java.sql.Date;
 
 public class Menu extends JFrame {
 
@@ -59,12 +65,15 @@ public class Menu extends JFrame {
 	private JTextField txtCVV;
 	private JTextField txtAmount;
 	public static String email;
-	private JComboBox comboBoxMonth;
-	private JComboBox comboBoxYear;
 	private JButton tabel150;
 	private JButton table100;
 	private JButton table50;
 	public static int table=0;
+	public String cardnum;
+	private JTextField txtmonth;
+	private JTextField txtyear;
+	private double amount;
+	private String cardDate;
 
 	/**
 	 * Launch the application.
@@ -269,6 +278,7 @@ public class Menu extends JFrame {
 					ps.setString(2, txtName.getText());
 					ps.setString(3, txtEmail.getText());
 					ps.setString(4, txtPass.getText());
+					btnEnterTable.setEnabled(true);
 					
 					int x=ps.executeUpdate();
 					if(x>0) {
@@ -541,17 +551,12 @@ public class Menu extends JFrame {
 		lblAmount.setForeground(Color.WHITE);
 		lblAmount.setFont(new Font("Times New Roman", Font.BOLD, 20));
 		
-		JButton btnBuy = new JButton("Buy ");
-		btnBuy.setBorder(null);
-		btnBuy.setBackground(new Color(0, 51, 51));
-		btnBuy.setForeground(Color.WHITE);
-		btnBuy.setFont(new Font("Times New Roman", Font.BOLD, 20));
+		txtCreditNumber = new JTextField();
+		txtCreditNumber.setColumns(10);
 		
 		txtCreditName = new JTextField();
 		txtCreditName.setColumns(10);
-		
-		txtCreditNumber = new JTextField();
-		txtCreditNumber.setColumns(10);
+
 		
 		txtCVV = new JTextField();
 		txtCVV.setColumns(10);
@@ -559,19 +564,68 @@ public class Menu extends JFrame {
 		txtAmount = new JTextField();
 		txtAmount.setColumns(10);
 		
+		JLabel lblCradNum = new JLabel("crad number is not valid");
+		lblCradNum.setVisible(false);
+		lblCradNum.setForeground(Color.RED);
+		lblCradNum.setFont(new Font("Times New Roman", Font.BOLD, 20));
 		
-		comboBoxMonth = new JComboBox();
-		comboBoxMonth.setName("");
-		for(int i=1;i<13;i++) {
-			comboBoxMonth.addItem(Integer.toString(i));
-		}
-		comboBoxMonth.setSelectedItem(null);
+		txtmonth = new JTextField();
+		txtmonth.setColumns(10);
 		
-		comboBoxYear = new JComboBox();
-		for(int i=2021;i<2035;i++) {
-			
-			comboBoxYear.addItem(Integer.toString(i));
-		}
+		txtyear = new JTextField();
+		txtyear.setColumns(10);
+		
+		JLabel lblNewLabel_2 = new JLabel("/");
+		lblNewLabel_2.setForeground(new Color(255, 255, 255));
+		
+		JLabel lblValDate = new JLabel("Date is not valid");
+		lblValDate.setVisible(false);
+		lblValDate.setFont(new Font("Times New Roman", Font.BOLD, 20));
+		lblValDate.setForeground(new Color(255, 0, 0));
+		
+		JButton btnBuy = new JButton("Buy ");
+		btnBuy.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				cardDate=txtmonth.getText()+'/'+txtyear.getText();
+				cardnum=txtCreditNumber.getText();
+				if(validitCard(cardnum)==false) {
+					lblCradNum.setVisible(true);
+				} else
+					try {
+						if(valDate(cardDate)==false) {
+							lblValDate.setVisible(true);
+						}
+						else {
+							amount=Double.parseDouble(txtAmount.getText());
+							try {
+								double tempbal=getBalance();
+								setBalance(tempbal+amount);
+							} catch (SQLException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+							lblValDate.setVisible(false);
+							lblCradNum.setVisible(false);
+							txtmonth.setText(null);
+							txtyear.setText(null);
+							txtCreditNumber.setText(null);
+							txtAmount.setText(null);
+	
+						}
+					} catch (NumberFormatException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (ParseException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+			}
+		});
+		btnBuy.setBorder(null);
+		btnBuy.setBackground(new Color(0, 51, 51));
+		btnBuy.setForeground(Color.WHITE);
+		btnBuy.setFont(new Font("Times New Roman", Font.BOLD, 20));
+		
 		
 		
 		GroupLayout gl_pnlBuyChip = new GroupLayout(pnlBuyChip);
@@ -580,7 +634,6 @@ public class Menu extends JFrame {
 				.addGroup(gl_pnlBuyChip.createSequentialGroup()
 					.addGap(45)
 					.addGroup(gl_pnlBuyChip.createParallelGroup(Alignment.LEADING)
-						.addComponent(btnBuy, GroupLayout.PREFERRED_SIZE, 85, GroupLayout.PREFERRED_SIZE)
 						.addGroup(gl_pnlBuyChip.createSequentialGroup()
 							.addGroup(gl_pnlBuyChip.createParallelGroup(Alignment.LEADING)
 								.addComponent(lblCreditNumber)
@@ -589,16 +642,29 @@ public class Menu extends JFrame {
 								.addComponent(lblAmount)
 								.addComponent(lblCredit3Num))
 							.addGap(73)
-							.addGroup(gl_pnlBuyChip.createParallelGroup(Alignment.LEADING, false)
-								.addGroup(Alignment.TRAILING, gl_pnlBuyChip.createSequentialGroup()
-									.addComponent(comboBoxMonth, GroupLayout.PREFERRED_SIZE, 56, GroupLayout.PREFERRED_SIZE)
-									.addPreferredGap(ComponentPlacement.RELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-									.addComponent(comboBoxYear, GroupLayout.PREFERRED_SIZE, 60, GroupLayout.PREFERRED_SIZE))
+							.addGroup(gl_pnlBuyChip.createParallelGroup(Alignment.TRAILING)
 								.addComponent(txtAmount, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 								.addComponent(txtCVV, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-								.addComponent(txtCreditNumber, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-								.addComponent(txtCreditName, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))))
-					.addContainerGap(411, Short.MAX_VALUE))
+								.addGroup(gl_pnlBuyChip.createSequentialGroup()
+									.addComponent(txtmonth, GroupLayout.PREFERRED_SIZE, 55, GroupLayout.PREFERRED_SIZE)
+									.addGap(16)
+									.addComponent(lblNewLabel_2)
+									.addPreferredGap(ComponentPlacement.UNRELATED)
+									.addComponent(txtyear, GroupLayout.PREFERRED_SIZE, 54, GroupLayout.PREFERRED_SIZE))
+								.addComponent(txtCreditName, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+								.addComponent(txtCreditNumber, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+							.addGroup(gl_pnlBuyChip.createParallelGroup(Alignment.LEADING)
+								.addGroup(gl_pnlBuyChip.createSequentialGroup()
+									.addPreferredGap(ComponentPlacement.RELATED, 29, Short.MAX_VALUE)
+									.addComponent(lblCradNum, GroupLayout.PREFERRED_SIZE, 358, GroupLayout.PREFERRED_SIZE)
+									.addGap(24))
+								.addGroup(gl_pnlBuyChip.createSequentialGroup()
+									.addGap(37)
+									.addComponent(lblValDate)
+									.addContainerGap())))
+						.addGroup(gl_pnlBuyChip.createSequentialGroup()
+							.addComponent(btnBuy, GroupLayout.PREFERRED_SIZE, 85, GroupLayout.PREFERRED_SIZE)
+							.addContainerGap(706, Short.MAX_VALUE))))
 		);
 		gl_pnlBuyChip.setVerticalGroup(
 			gl_pnlBuyChip.createParallelGroup(Alignment.LEADING)
@@ -610,12 +676,15 @@ public class Menu extends JFrame {
 					.addGap(50)
 					.addGroup(gl_pnlBuyChip.createParallelGroup(Alignment.BASELINE)
 						.addComponent(lblCreditDate)
-						.addComponent(txtCreditNumber, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+						.addComponent(txtCreditNumber, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+						.addComponent(lblCradNum, GroupLayout.PREFERRED_SIZE, 29, GroupLayout.PREFERRED_SIZE))
 					.addGap(52)
 					.addGroup(gl_pnlBuyChip.createParallelGroup(Alignment.BASELINE)
 						.addComponent(lblCreditName)
-						.addComponent(comboBoxMonth, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-						.addComponent(comboBoxYear, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+						.addComponent(txtmonth, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+						.addComponent(txtyear, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+						.addComponent(lblNewLabel_2, GroupLayout.PREFERRED_SIZE, 24, GroupLayout.PREFERRED_SIZE)
+						.addComponent(lblValDate))
 					.addGap(45)
 					.addGroup(gl_pnlBuyChip.createParallelGroup(Alignment.BASELINE)
 						.addComponent(txtCVV, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
@@ -629,7 +698,7 @@ public class Menu extends JFrame {
 							.addGroup(gl_pnlBuyChip.createParallelGroup(Alignment.BASELINE)
 								.addComponent(txtAmount, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 								.addComponent(lblAmount))))
-					.addContainerGap(25, Short.MAX_VALUE))
+					.addContainerGap(20, Short.MAX_VALUE))
 		);
 		pnlBuyChip.setLayout(gl_pnlBuyChip);
 		
@@ -671,6 +740,43 @@ public class Menu extends JFrame {
 		return match.find();
 	}
 	
+	public static boolean validitCard(String card) {
+		int[] cardint=new int[card.length()];
+		
+		for(int i=0;i<card.length();i++) {
+			cardint[i]=Integer.parseInt(card.substring(i,i+1));
+		}
+		
+		for(int i=cardint.length-2;i>=0;i=i-2) {
+			int temp=cardint[i];
+			temp=temp*2;
+			if(temp>9) {
+				temp=(temp % 10)+1;
+			}
+			cardint[i]=temp;
+		}
+		int sum=0;
+		for(int i=0;i<cardint.length;i++) {
+			sum+=cardint[i];
+		}
+		if(sum%10==0) {
+			return true;
+		}
+		return false;
+	}
+	
+	public boolean valDate(String date) throws ParseException {
+		SimpleDateFormat simpleDate = new SimpleDateFormat("MM/yy");
+	    simpleDate.setLenient(false);
+		java.util.Date expiry = simpleDate.parse(date);
+		boolean expired = expiry.before(new java.util.Date());
+		if(expired==true) {
+			return false;
+		}
+			
+		return true;
+	}
+	
 	@SuppressWarnings("static-access")
 	public double getBalance () throws SQLException {
 		double balance;
@@ -697,7 +803,7 @@ public class Menu extends JFrame {
 	}
 	
 	@SuppressWarnings("static-access")
-	public int witchTable() {
+	public int whichTable() {
 		return this.table;
 	}
 }

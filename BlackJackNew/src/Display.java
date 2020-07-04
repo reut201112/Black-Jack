@@ -146,7 +146,7 @@ public class Display extends JFrame {
 				 restor();
 				 try {
 					balance=menu.getBalance();
-					balance=balance-menu.witchTable();
+					balance=balance-menu.whichTable();
 					menu.setBalance(balance);
 				} catch (SQLException e2) {
 					// TODO Auto-generated catch block
@@ -520,7 +520,7 @@ public class Display extends JFrame {
 		 String sd=Integer.toString(sumD);
 		 displayTotalDealer(sd);
 		 count=2;
-	 	 while (dealer.valueOf()<17 || (dealer.valueOf()<=player.valueOf() && !player.isBusted())) {
+	 	 while (dealer.valueOf()<17  && !player.isBusted()) {
 			 dealer.add(deck.nextCard());
 			 sleep(100);
 			 displayDealerCards(dealer, count);
@@ -532,14 +532,14 @@ public class Display extends JFrame {
 		if(player.hasBlackJack() && !dealer.hasBlackJack()){
 			displayOutcomePlayer("Win");
 			displayOutcomeDealer("Lose");
-			balance+=menu.witchTable()*2;
+			balance+=menu.whichTable()*2;
 			menu.setBalance(balance);
 			txtBalance.setText(Double.toString(balance));
 			}
 		else if (dealer.hasBlackJack() && player.hasBlackJack()){
 			displayOutcomePlayer("Tie");
 			displayOutcomeDealer("Tie");
-			balance+=menu.witchTable();
+			balance+=menu.whichTable();
 			menu.setBalance(balance);
 			txtBalance.setText(Double.toString(balance));
 		}
@@ -552,18 +552,14 @@ public class Display extends JFrame {
 		else if(dealer.isBusted() && !player.isBusted()) {
 			displayOutcomePlayer("Win");
 			displayOutcomeDealer("Lose");
-			balance+=menu.witchTable()*2;
+			balance+=menu.whichTable()*2;
 			menu.setBalance(balance);
 			txtBalance.setText(Double.toString(balance));
 		}
-		else if(player.isBusted() && dealer.isBusted()) {
-			   displayOutcomePlayer("Lose");
-		   		displayOutcomeDealer("Lose");
-		   }
 	   else if (dealer.valueOf() == player.valueOf()){
 		   displayOutcomePlayer("Tie");
 	   		displayOutcomeDealer("Tie");
-	   		balance+=menu.witchTable();
+	   		balance+=menu.whichTable();
 			menu.setBalance(balance);
 			txtBalance.setText(Double.toString(balance));}
 	   else if (dealer.valueOf() > player.valueOf()){
@@ -572,7 +568,7 @@ public class Display extends JFrame {
 	   else if (player.valueOf() > dealer.valueOf()){
 		   		displayOutcomePlayer("Win");
 		   		displayOutcomeDealer("Lose");
-		   		balance+=menu.witchTable()*2;
+		   		balance+=menu.whichTable()*2;
 				menu.setBalance(balance);
 				txtBalance.setText(Double.toString(balance));
 	   }
