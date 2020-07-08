@@ -25,6 +25,7 @@ import javax.swing.UIManager;
 import java.awt.Toolkit;
 import javax.swing.border.LineBorder;
 import javax.swing.event.AncestorListener;
+import javax.swing.plaf.basic.BasicInternalFrameTitlePane.CloseAction;
 import javax.swing.event.AncestorEvent;
 import java.awt.event.ActionEvent;
 import java.awt.Canvas;
@@ -69,6 +70,9 @@ public class Display extends JFrame {
 	private JTextField txtBalance;
 	private JLabel lblbalance;
 	private double balance;
+	public int win=0;
+	public int lose=0;
+	private JButton btnBackToMenu;
 	
 	
 
@@ -106,7 +110,6 @@ public class Display extends JFrame {
 		contentPane.setBackground(new Color(46, 139, 87));
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
-		setVisible(true);
 		
 		
 		PlayerPanel.setToolTipText("");
@@ -245,6 +248,13 @@ public class Display extends JFrame {
 		lblbalance.setFont(new Font("Times New Roman", Font.BOLD, 20));
 		lblbalance.setForeground(Color.BLACK);
 		
+		btnBackToMenu = new JButton("Back To Menu");
+		btnBackToMenu.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				setVisible(false);
+			}
+		});
+		
 		
 		GroupLayout gl_contentPane = new GroupLayout(contentPane);
 		gl_contentPane.setHorizontalGroup(
@@ -257,15 +267,23 @@ public class Display extends JFrame {
 							.addGap(18)
 							.addComponent(DilerPanel, GroupLayout.DEFAULT_SIZE, 508, Short.MAX_VALUE))
 						.addGroup(gl_contentPane.createSequentialGroup()
-							.addComponent(bHit)
-							.addGap(18)
-							.addComponent(bStay)
-							.addGap(342)
-							.addComponent(bPlay))
-						.addGroup(gl_contentPane.createSequentialGroup()
-							.addComponent(lblbalance)
-							.addGap(18)
-							.addComponent(txtBalance, GroupLayout.PREFERRED_SIZE, 162, GroupLayout.PREFERRED_SIZE)))
+							.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING)
+								.addGroup(gl_contentPane.createSequentialGroup()
+									.addComponent(bHit)
+									.addGap(18)
+									.addComponent(bStay))
+								.addGroup(gl_contentPane.createSequentialGroup()
+									.addComponent(lblbalance)
+									.addGap(18)
+									.addComponent(txtBalance, GroupLayout.PREFERRED_SIZE, 162, GroupLayout.PREFERRED_SIZE)))
+							.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING)
+								.addGroup(gl_contentPane.createSequentialGroup()
+									.addGap(217)
+									.addComponent(bPlay))
+								.addGroup(gl_contentPane.createSequentialGroup()
+									.addGap(187)
+									.addComponent(btnBackToMenu, GroupLayout.PREFERRED_SIZE, 141, GroupLayout.PREFERRED_SIZE)))
+							.addGap(30)))
 					.addContainerGap())
 		);
 		gl_contentPane.setVerticalGroup(
@@ -283,7 +301,8 @@ public class Display extends JFrame {
 					.addGap(23)
 					.addGroup(gl_contentPane.createParallelGroup(Alignment.BASELINE)
 						.addComponent(txtBalance, GroupLayout.PREFERRED_SIZE, 43, GroupLayout.PREFERRED_SIZE)
-						.addComponent(lblbalance))
+						.addComponent(lblbalance)
+						.addComponent(btnBackToMenu))
 					.addContainerGap(42, Short.MAX_VALUE))
 		);
 		bHit.setEnabled(false);
@@ -531,6 +550,7 @@ public class Display extends JFrame {
 		 displayTotalDealer(sd);
 		if(player.hasBlackJack() && !dealer.hasBlackJack()){
 			displayOutcomePlayer("Win");
+			win++;
 			displayOutcomeDealer("Lose");
 			balance+=menu.whichTable()*2;
 			menu.setBalance(balance);
@@ -545,12 +565,17 @@ public class Display extends JFrame {
 		}
 		else if(dealer.hasBlackJack() && !player.hasBlackJack()){
 			displayOutcomePlayer("Lose");
-			displayOutcomeDealer("Win");}
+			lose++;
+			displayOutcomeDealer("Win");
+			}
 		else if (player.isBusted() && !(dealer.isBusted())){
 			displayOutcomePlayer("Lose");
-			displayOutcomeDealer("Win");}
+			lose++;
+			displayOutcomeDealer("Win");
+			}
 		else if(dealer.isBusted() && !player.isBusted()) {
 			displayOutcomePlayer("Win");
+			win++;
 			displayOutcomeDealer("Lose");
 			balance+=menu.whichTable()*2;
 			menu.setBalance(balance);
@@ -564,14 +589,18 @@ public class Display extends JFrame {
 			txtBalance.setText(Double.toString(balance));}
 	   else if (dealer.valueOf() > player.valueOf()){
                 displayOutcomePlayer("Lose");
+                lose++;
                 displayOutcomeDealer("Win");}
 	   else if (player.valueOf() > dealer.valueOf()){
 		   		displayOutcomePlayer("Win");
+		   		win++;
 		   		displayOutcomeDealer("Lose");
 		   		balance+=menu.whichTable()*2;
 				menu.setBalance(balance);
 				txtBalance.setText(Double.toString(balance));
 	   }
+		menu.setVictories(win+menu.GetVictories());
+		menu.setLosses(lose+menu.GetLoss());
 		
 			 enablePlayButton();
 		}

@@ -44,6 +44,7 @@ import java.io.File;
 import java.io.IOException;
 import javax.swing.JComboBox;
 import java.sql.Date;
+import java.awt.Component;
 
 public class Menu extends JFrame {
 
@@ -74,6 +75,12 @@ public class Menu extends JFrame {
 	private JTextField txtyear;
 	private double amount;
 	private String cardDate;
+	private JLabel lblPurchesSucssfuly;
+	private JLabel lblWinsInfo;
+	private JLabel lblLossInfo;
+	private JLabel lblBalanceInfo;
+	
+	
 
 	/**
 	 * Launch the application.
@@ -171,6 +178,48 @@ public class Menu extends JFrame {
 		btnChipBuy.setFont(new Font("Times New Roman", Font.BOLD, 18));
 		btnChipBuy.setBorder(null);
 		btnChipBuy.setBackground(new Color(0, 51, 51));
+		
+		JButton btnPlayerInfo = new JButton("Player Info");
+		btnPlayerInfo.setEnabled(false);
+		btnPlayerInfo.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				CardLayout c =(CardLayout)(pnlCard.getLayout());
+				c.show(pnlCard, "pnlPlayerInfo");
+				
+				String bal = null;
+				try {
+					bal = Double.toString(getBalance());
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				lblBalanceInfo.setText(bal);
+				
+				String vic=null;
+				try {
+					vic=Integer.toString(GetVictories());
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				lblWinsInfo.setText(vic);
+				
+				String los=null;
+				try {
+					los=Integer.toString(GetLoss());
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				lblLossInfo.setText(los);
+				
+				
+			}
+		});
+		btnPlayerInfo.setForeground(Color.WHITE);
+		btnPlayerInfo.setFont(new Font("Times New Roman", Font.BOLD, 18));
+		btnPlayerInfo.setBorder(null);
+		btnPlayerInfo.setBackground(new Color(0, 51, 51));
 		GroupLayout gl_panel = new GroupLayout(panel);
 		gl_panel.setHorizontalGroup(
 			gl_panel.createParallelGroup(Alignment.LEADING)
@@ -180,7 +229,8 @@ public class Menu extends JFrame {
 						.addComponent(btnRegister, GroupLayout.DEFAULT_SIZE, 101, Short.MAX_VALUE)
 						.addComponent(btnLogin, GroupLayout.DEFAULT_SIZE, 101, Short.MAX_VALUE)
 						.addComponent(btnEnterTable, GroupLayout.DEFAULT_SIZE, 101, Short.MAX_VALUE)
-						.addComponent(btnChipBuy, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+						.addComponent(btnChipBuy, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+						.addComponent(btnPlayerInfo, GroupLayout.PREFERRED_SIZE, 101, GroupLayout.PREFERRED_SIZE))
 					.addContainerGap())
 		);
 		gl_panel.setVerticalGroup(
@@ -194,7 +244,9 @@ public class Menu extends JFrame {
 					.addComponent(btnEnterTable)
 					.addGap(35)
 					.addComponent(btnChipBuy, GroupLayout.PREFERRED_SIZE, 23, GroupLayout.PREFERRED_SIZE)
-					.addContainerGap(183, Short.MAX_VALUE))
+					.addGap(29)
+					.addComponent(btnPlayerInfo, GroupLayout.PREFERRED_SIZE, 23, GroupLayout.PREFERRED_SIZE)
+					.addContainerGap(131, Short.MAX_VALUE))
 		);
 		panel.setLayout(gl_panel);
 		
@@ -204,7 +256,7 @@ public class Menu extends JFrame {
 		
 		JPanel pnlWelcome = new JPanel();
 		pnlWelcome.setBackground(new Color(0, 51, 51));
-		pnlCard.add(pnlWelcome, "name_861196290986800");
+		pnlCard.add(pnlWelcome, "pnlWelcom");
 		pnlWelcome.setLayout(null);
 		
 		JLabel lblNewLabel = new JLabel("Weclom to Black Jack");
@@ -278,7 +330,6 @@ public class Menu extends JFrame {
 					ps.setString(2, txtName.getText());
 					ps.setString(3, txtEmail.getText());
 					ps.setString(4, txtPass.getText());
-					btnEnterTable.setEnabled(true);
 					
 					int x=ps.executeUpdate();
 					if(x>0) {
@@ -288,6 +339,8 @@ public class Menu extends JFrame {
 						txtPass.setText(null);
 						lblsuccsess.setVisible(true);
 						btnChipBuy.setEnabled(true);
+						btnEnterTable.setEnabled(true);
+						btnPlayerInfo.setEnabled(true);
 					}
 					conn.close();
 					}
@@ -363,6 +416,9 @@ public class Menu extends JFrame {
 					c.show(pnlCard, "pnlTabel");
 					btnEnterTable.setEnabled(true);
 					btnChipBuy.setEnabled(true);
+					btnPlayerInfo.setEnabled(true);
+					txtLoginEmail.setText(null);
+					txtLoginPass.setText(null);
 					try {
 						lblHello.setText("Hello " +getName(email));
 					} catch (SQLException e) {
@@ -527,6 +583,26 @@ public class Menu extends JFrame {
 		lblHello.setBounds(34, 62, 324, 27);
 		pnlTabels.add(lblHello);
 		
+		JButton btnLogOff = new JButton("Log Off");
+		btnLogOff.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				CardLayout c =(CardLayout)(pnlCard.getLayout());
+				c.show(pnlCard, "pnlWelcom");
+				txtLoginEmail.setText(null);
+				txtLoginPass.setText(null);
+				btnEnterTable.setEnabled(false);
+				btnChipBuy.setEnabled(false);
+				btnPlayerInfo.setEnabled(false);
+				
+			}
+		});
+		btnLogOff.setBorder(null);
+		btnLogOff.setBackground(new Color(0, 51, 51));
+		btnLogOff.setForeground(new Color(255, 255, 255));
+		btnLogOff.setFont(new Font("Times New Roman", Font.BOLD, 20));
+		btnLogOff.setBounds(34, 396, 115, 29);
+		pnlTabels.add(btnLogOff);
+		
 		Panel pnlBuyChip = new Panel();
 		pnlBuyChip.setBackground(new Color(0, 51, 51));
 		pnlCard.add(pnlBuyChip, "pnlBuingChip");
@@ -584,6 +660,7 @@ public class Menu extends JFrame {
 		lblValDate.setForeground(new Color(255, 0, 0));
 		
 		JButton btnBuy = new JButton("Buy ");
+		btnBuy.setAlignmentX(Component.RIGHT_ALIGNMENT);
 		btnBuy.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				cardDate=txtmonth.getText()+'/'+txtyear.getText();
@@ -606,10 +683,13 @@ public class Menu extends JFrame {
 							}
 							lblValDate.setVisible(false);
 							lblCradNum.setVisible(false);
+							txtCreditName.setText(null);
+							txtCVV.setText(null);
 							txtmonth.setText(null);
 							txtyear.setText(null);
 							txtCreditNumber.setText(null);
 							txtAmount.setText(null);
+							lblPurchesSucssfuly.setVisible(true);
 	
 						}
 					} catch (NumberFormatException e) {
@@ -626,6 +706,11 @@ public class Menu extends JFrame {
 		btnBuy.setForeground(Color.WHITE);
 		btnBuy.setFont(new Font("Times New Roman", Font.BOLD, 20));
 		
+		lblPurchesSucssfuly = new JLabel("purchase succeeded");
+		lblPurchesSucssfuly.setVisible(false);
+		lblPurchesSucssfuly.setForeground(Color.WHITE);
+		lblPurchesSucssfuly.setFont(new Font("Times New Roman", Font.BOLD, 20));
+		
 		
 		
 		GroupLayout gl_pnlBuyChip = new GroupLayout(pnlBuyChip);
@@ -634,14 +719,15 @@ public class Menu extends JFrame {
 				.addGroup(gl_pnlBuyChip.createSequentialGroup()
 					.addGap(45)
 					.addGroup(gl_pnlBuyChip.createParallelGroup(Alignment.LEADING)
+						.addComponent(lblCreditNumber)
+						.addComponent(lblCreditDate)
+						.addComponent(lblCreditName)
+						.addComponent(lblAmount)
+						.addComponent(lblCredit3Num)
+						.addComponent(btnBuy, GroupLayout.PREFERRED_SIZE, 85, GroupLayout.PREFERRED_SIZE))
+					.addGap(73)
+					.addGroup(gl_pnlBuyChip.createParallelGroup(Alignment.LEADING)
 						.addGroup(gl_pnlBuyChip.createSequentialGroup()
-							.addGroup(gl_pnlBuyChip.createParallelGroup(Alignment.LEADING)
-								.addComponent(lblCreditNumber)
-								.addComponent(lblCreditDate)
-								.addComponent(lblCreditName)
-								.addComponent(lblAmount)
-								.addComponent(lblCredit3Num))
-							.addGap(73)
 							.addGroup(gl_pnlBuyChip.createParallelGroup(Alignment.TRAILING)
 								.addComponent(txtAmount, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 								.addComponent(txtCVV, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
@@ -663,8 +749,8 @@ public class Menu extends JFrame {
 									.addComponent(lblValDate)
 									.addContainerGap())))
 						.addGroup(gl_pnlBuyChip.createSequentialGroup()
-							.addComponent(btnBuy, GroupLayout.PREFERRED_SIZE, 85, GroupLayout.PREFERRED_SIZE)
-							.addContainerGap(706, Short.MAX_VALUE))))
+							.addComponent(lblPurchesSucssfuly, GroupLayout.PREFERRED_SIZE, 178, GroupLayout.PREFERRED_SIZE)
+							.addContainerGap())))
 		);
 		gl_pnlBuyChip.setVerticalGroup(
 			gl_pnlBuyChip.createParallelGroup(Alignment.LEADING)
@@ -689,18 +775,83 @@ public class Menu extends JFrame {
 					.addGroup(gl_pnlBuyChip.createParallelGroup(Alignment.BASELINE)
 						.addComponent(txtCVV, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 						.addComponent(lblCredit3Num))
+					.addGap(48)
+					.addGroup(gl_pnlBuyChip.createParallelGroup(Alignment.BASELINE)
+						.addComponent(txtAmount, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+						.addComponent(lblAmount))
+					.addGap(38)
 					.addGroup(gl_pnlBuyChip.createParallelGroup(Alignment.LEADING)
-						.addGroup(gl_pnlBuyChip.createSequentialGroup()
-							.addGap(112)
-							.addComponent(btnBuy, GroupLayout.PREFERRED_SIZE, 36, GroupLayout.PREFERRED_SIZE))
-						.addGroup(gl_pnlBuyChip.createSequentialGroup()
-							.addGap(48)
-							.addGroup(gl_pnlBuyChip.createParallelGroup(Alignment.BASELINE)
-								.addComponent(txtAmount, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-								.addComponent(lblAmount))))
+						.addComponent(btnBuy, GroupLayout.PREFERRED_SIZE, 36, GroupLayout.PREFERRED_SIZE)
+						.addComponent(lblPurchesSucssfuly, GroupLayout.PREFERRED_SIZE, 24, GroupLayout.PREFERRED_SIZE))
 					.addContainerGap(20, Short.MAX_VALUE))
 		);
 		pnlBuyChip.setLayout(gl_pnlBuyChip);
+		
+		JPanel pnlPlayerInfo = new JPanel();
+		pnlPlayerInfo.setBackground(new Color(0, 51, 51));
+		pnlCard.add(pnlPlayerInfo, "pnlPlayerInfo");
+		
+		JLabel lblBalance = new JLabel("Balance :");
+		lblBalance.setForeground(Color.WHITE);
+		lblBalance.setFont(new Font("Times New Roman", Font.BOLD, 20));
+		
+		JLabel lblVictories = new JLabel("Wins :");
+		lblVictories.setForeground(Color.WHITE);
+		lblVictories.setFont(new Font("Times New Roman", Font.BOLD, 20));
+		
+		JLabel lblLoss = new JLabel("Losses :");
+		lblLoss.setForeground(Color.WHITE);
+		lblLoss.setFont(new Font("Times New Roman", Font.BOLD, 20));
+		
+		 lblBalanceInfo = new JLabel("");
+		 lblBalanceInfo.setForeground(Color.WHITE);
+		lblBalanceInfo.setFont(new Font("Times New Roman", Font.BOLD, 20));
+		
+		 lblWinsInfo = new JLabel("");
+		lblWinsInfo.setForeground(Color.WHITE);
+		lblWinsInfo.setFont(new Font("Times New Roman", Font.BOLD, 20));
+		
+		lblLossInfo = new JLabel("");
+		lblLossInfo.setForeground(Color.WHITE);
+		lblLossInfo.setFont(new Font("Times New Roman", Font.BOLD, 20));
+		GroupLayout gl_pnlPlayerInfo = new GroupLayout(pnlPlayerInfo);
+		gl_pnlPlayerInfo.setHorizontalGroup(
+			gl_pnlPlayerInfo.createParallelGroup(Alignment.LEADING)
+				.addGroup(gl_pnlPlayerInfo.createSequentialGroup()
+					.addGap(64)
+					.addGroup(gl_pnlPlayerInfo.createParallelGroup(Alignment.LEADING)
+						.addGroup(gl_pnlPlayerInfo.createSequentialGroup()
+							.addComponent(lblBalance, GroupLayout.PREFERRED_SIZE, 106, GroupLayout.PREFERRED_SIZE)
+							.addGap(53)
+							.addComponent(lblBalanceInfo))
+						.addGroup(gl_pnlPlayerInfo.createSequentialGroup()
+							.addComponent(lblLoss, GroupLayout.PREFERRED_SIZE, 117, GroupLayout.PREFERRED_SIZE)
+							.addGap(34)
+							.addComponent(lblLossInfo))
+						.addGroup(gl_pnlPlayerInfo.createSequentialGroup()
+							.addComponent(lblVictories, GroupLayout.PREFERRED_SIZE, 126, GroupLayout.PREFERRED_SIZE)
+							.addGap(51)
+							.addComponent(lblWinsInfo)))
+					.addContainerGap(552, Short.MAX_VALUE))
+		);
+		gl_pnlPlayerInfo.setVerticalGroup(
+			gl_pnlPlayerInfo.createParallelGroup(Alignment.LEADING)
+				.addGroup(gl_pnlPlayerInfo.createSequentialGroup()
+					.addGap(89)
+					.addGroup(gl_pnlPlayerInfo.createParallelGroup(Alignment.BASELINE)
+						.addComponent(lblBalance, GroupLayout.PREFERRED_SIZE, 56, GroupLayout.PREFERRED_SIZE)
+						.addComponent(lblBalanceInfo))
+					.addGap(38)
+					.addGroup(gl_pnlPlayerInfo.createParallelGroup(Alignment.BASELINE)
+						.addComponent(lblVictories, GroupLayout.PREFERRED_SIZE, 56, GroupLayout.PREFERRED_SIZE)
+						.addComponent(lblWinsInfo))
+					.addGap(31)
+					.addGroup(gl_pnlPlayerInfo.createParallelGroup(Alignment.BASELINE)
+						.addComponent(lblLoss, GroupLayout.PREFERRED_SIZE, 59, GroupLayout.PREFERRED_SIZE)
+						.addComponent(lblLossInfo))
+					.addContainerGap(166, Short.MAX_VALUE))
+		);
+		pnlPlayerInfo.setLayout(gl_pnlPlayerInfo);
 		
 		
 	}
@@ -806,4 +957,57 @@ public class Menu extends JFrame {
 	public int whichTable() {
 		return this.table;
 	}
+	
+	@SuppressWarnings("static-access")
+	public int GetVictories() throws SQLException
+	{
+		int wins;
+		Connection conn=DriverManager.getConnection("jdbc:mysql://localhost:3306/playesrdb?serverTimezone=UTC","root","Reut8091746");
+		PreparedStatement psemail=conn.prepareStatement("SELECT Victories FROM playesrdb.players WHERE Email=?;");
+		psemail.setString(1,this.email);
+		ResultSet res=psemail.executeQuery();
+		if(res.next()) {
+			wins=res.getInt("Victories");
+		}
+		else {
+			wins=0;
+		}
+		
+		return wins;	
+	}
+	
+	@SuppressWarnings("static-access")
+	public void setVictories (int win) throws SQLException {
+		Connection conn=DriverManager.getConnection("jdbc:mysql://localhost:3306/playesrdb?serverTimezone=UTC","root","Reut8091746");
+		PreparedStatement psemail=conn.prepareStatement("UPDATE playesrdb.players SET Victories='"+win+"' WHERE Email=?;");
+		psemail.setString(1,this.email);
+		psemail.execute();
+	}
+	
+	@SuppressWarnings("static-access")
+	public int GetLoss() throws SQLException
+	{
+		int loss;
+		Connection conn=DriverManager.getConnection("jdbc:mysql://localhost:3306/playesrdb?serverTimezone=UTC","root","Reut8091746");
+		PreparedStatement psemail=conn.prepareStatement("SELECT Losses FROM playesrdb.players WHERE Email=?;");
+		psemail.setString(1,this.email);
+		ResultSet res=psemail.executeQuery();
+		if(res.next()) {
+			loss=res.getInt("Losses");
+		}
+		else {
+			loss=0;
+		}
+		return loss;	
+	}
+	
+	@SuppressWarnings("static-access")
+	public void setLosses (int loss) throws SQLException {
+		Connection conn=DriverManager.getConnection("jdbc:mysql://localhost:3306/playesrdb?serverTimezone=UTC","root","Reut8091746");
+		PreparedStatement psemail=conn.prepareStatement("UPDATE playesrdb.players SET Losses='"+loss+"' WHERE Email=?;");
+		psemail.setString(1,this.email);
+		psemail.execute();
+	}
+	
+	
 }
